@@ -14,6 +14,9 @@ export default function loginController(request, reply) {
     database('profileCollection')
         .then((collection) => {
             collection.insert(profile);
+        })
+        .fail((err) => {
+            console.log(err);
         });
 
     /*request.auth.session.clear();
