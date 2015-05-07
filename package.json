@@ -1,0 +1,19 @@
+{
+  "name": "tech-assault-auth",
+  "version": "0.1.0",
+  "description": "Service performing authentication in Tech Assault.",
+  "scripts": {
+    "test": "mocha",
+    "start": "./node_modules/.bin/babel-node server"
+  },
+  "author": "Arild Wanvik Tvergrov <arild.wanvik@gmail.com>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "hapi": "~8.4.0",
+    "immutable": "~3.7.2",
+    "babel": "~5.2.15",
+    "mongodb": "~2.0.28",
+    "bell": "~2.7.0",
+    "hapi-auth-cookie": "~2.2.0"
+  }
+}
