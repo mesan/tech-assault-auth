@@ -1,7 +1,9 @@
 import Hapi from 'hapi';
 import fs from 'fs';
 import Bell from 'bell';
-import HapiAuthCookie from 'hapi-auth-cookie';
+import loginController from './controllers/loginController';
+import logoutController from './controllers/logoutController';
+import getSessionController from './controllers/getSessionController';
 
 let server = new Hapi.Server();
 
@@ -14,11 +16,11 @@ let tls = (typeof process.env.MODE === 'undefined' || process.env.MODE === 'dev'
 } : undefined;
 
 server.connection({
-    port: process.env.PORT || 3001,
+    port: process.env.PORT || 3002,
     tls: tls
 });
 
-server.register([Bell, HapiAuthCookie], (err) => {
+server.register([Bell], (err) => {
 
     server.auth.strategy('facebook', 'bell', {
         provider: 'facebook',
@@ -28,56 +30,29 @@ server.register([Bell, HapiAuthCookie], (err) => {
         isSecure: true
     });
 
-    server.auth.strategy('session', 'cookie', {
+    /*server.auth.strategy('session', 'cookie', {
         password: 'cookie',
         cookie: 'sid',
         redirectTo: '/login',
         redirectOnTry: false,
         isSecure: true
-    })
+    });*/
 
     server.route({
         method: ['GET', 'POST'],
         path: '/login',
         config: {
             auth: 'facebook',
-            handler: function(request, reply) {
-                var t = request.auth.credentials;
-
-                var profile = {
-                    token: t.token,
-                    secret: t.secret,
-                    id: t.profile.id,
-                    name: t.profile.name,
-                    fullName: t.profile.displayName,
-                };
-
-                request.auth.session.clear();
-                request.auth.session.set(profile);
-
-                if (!process.env.LOGIN_REDIRECT_URL) {
-                    return reply.redirect('/');
-                }
-
-                return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + t.token);
-            }
+            handler: loginController
         }
     });
 
     server.route({
         method: ['GET'],
-        path: '/logout',
+        path: '/logout/{token}',
         config: {
-            auth: 'session',
-            handler: function(request, reply) {
-                request.auth.session.clear();
-
-                if (!process.env.LOGOUT_REDIRECT_URL) {
-                    return reply.redirect('/');
-                }
-
-                return reply.redirect(process.env.LOGOUT_REDIRECT_URL);
-            }
+            auth: false,
+            handler: logoutController
         }
     });
 
@@ -85,12 +60,8 @@ server.register([Bell, HapiAuthCookie], (err) => {
         method: ['GET'],
         path: '/sessions/{token}',
         config: {
-            auth: 'session',
-            handler: function(request, reply) {
-                reply({
-                    email: 'arild.wanvik@gmail.com'
-                });
-            }
+            auth: false,
+            handler: getSessionController
         }
     });
 
