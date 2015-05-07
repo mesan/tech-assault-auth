@@ -23,8 +23,8 @@ server.register([Bell, HapiAuthCookie], (err) => {
     server.auth.strategy('facebook', 'bell', {
         provider: 'facebook',
         password: 'cookie_encryption_password',
-        clientId: '1601219123428858',
-        clientSecret: '757a66e55977dfbed3bf06fc945503c9',
+        clientId: process.env.FACEBOOK_CLIENT_ID,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
         isSecure: true
     });
 
