@@ -7,6 +7,12 @@ export default function getSessionController(request, reply) {
             collection.find({
                     token: request.params.token
                 }, { name: 1, fullName: 1}).toArray((err, docs) => {
+
+                    if (err) {
+                        console.log(err);
+                        return reply().code(204);
+                    }
+
                     if (!docs.length) {
                         return reply().code(404);
                     }
