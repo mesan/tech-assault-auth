@@ -18,5 +18,9 @@ export default function getSessionController(request, reply) {
                     }
                     reply(docs[0]);
                 });
+        })
+        .fail((err) => {
+            console.log(err);
+            reply().code(204);
         });
 }
