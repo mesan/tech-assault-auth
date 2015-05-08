@@ -1,16 +1,17 @@
 import database from '../util/database';
 
-export default function loginController(request, reply) {
+export default function loginFacebookController(request, reply) {
     console.log(request.auth.error);
-    
-    var t = request.auth.credentials;
+
+    var cred = request.auth.credentials;
 
     var profile = {
-        token: t.token,
-        secret: t.secret,
-        id: t.profile.id,
-        name: t.profile.name,
-        fullName: t.profile.displayName,
+        token: process.env.FACEBOOK_LOGIN_TOKEN_PREFIX + cred.token,
+        secret: cred.secret,
+        id: cred.profile.id,
+        name: cred.profile.name,
+        fullName: cred.profile.displayName,
+        createdAt: new Date()
     };
 
     database('profileCollection')
@@ -28,5 +29,5 @@ export default function loginController(request, reply) {
         return reply.redirect('/');
     }
 
-    return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + t.token);
+    return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + cred.token);
 }

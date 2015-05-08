@@ -1,7 +1,7 @@
 import Hapi from 'hapi';
 import fs from 'fs';
 import Bell from 'bell';
-import loginController from './controllers/loginController';
+import loginFacebookController from './controllers/loginFacebookController';
 import logoutController from './controllers/logoutController';
 import getSessionController from './controllers/getSessionController';
 
@@ -43,7 +43,7 @@ server.register([Bell], (err) => {
         path: '/login',
         config: {
             auth: 'facebook',
-            handler: loginController
+            handler: loginFacebookController
         }
     });
 

@@ -6,7 +6,7 @@ export default function getSessionController(request, reply) {
         .then((collection) => {
             collection.find({
                     token: request.params.token
-                }, { name: 1, fullName: 1}).toArray((err, docs) => {
+                }, { name: 1, fullName: 1, createdAt: 1 }).toArray((err, docs) => {
 
                     if (err) {
                         console.log(err);
@@ -16,6 +16,7 @@ export default function getSessionController(request, reply) {
                     if (!docs.length) {
                         return reply().code(404);
                     }
+
                     reply(docs[0]);
                 });
         })
