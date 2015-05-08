@@ -29,5 +29,5 @@ export default function loginFacebookController(request, reply) {
         return reply.redirect('/');
     }
 
-    return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + cred.token);
+    return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + profile.token);
 }
