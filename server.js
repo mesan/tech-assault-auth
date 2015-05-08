@@ -42,7 +42,10 @@ server.register([Bell], (err) => {
         method: ['GET', 'POST'],
         path: '/login',
         config: {
-            auth: 'facebook',
+            auth: {
+                strategy: 'facebook',
+                mode: 'try'
+            },
             handler: loginController
         }
     });

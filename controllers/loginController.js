@@ -1,6 +1,8 @@
 import database from '../util/database';
 
 export default function loginController(request, reply) {
+    console.log(request.auth.error);
+    
     var t = request.auth.credentials;
 
     var profile = {
@@ -11,13 +13,13 @@ export default function loginController(request, reply) {
         fullName: t.profile.displayName,
     };
 
-    /*database('profileCollection')
+    database('profileCollection')
         .then((collection) => {
             collection.insert(profile);
-    })
-    .fail((err) => {
-        console.log(err);
-    });*/
+        })
+        .fail((err) => {
+            console.log(err);
+        });
 
     /*request.auth.session.clear();
     request.auth.session.set(profile);*/
