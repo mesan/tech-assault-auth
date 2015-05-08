@@ -27,7 +27,7 @@ server.register([Bell], (err) => {
         password: 'cookie_encryption_password',
         clientId: process.env.FACEBOOK_CLIENT_ID,
         clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-        isSecure: true
+        isSecure: false
     });
 
     /*server.auth.strategy('session', 'cookie', {
@@ -42,10 +42,7 @@ server.register([Bell], (err) => {
         method: ['GET', 'POST'],
         path: '/login',
         config: {
-            auth: {
-                strategy: 'facebook',
-                mode: 'try'
-            },
+            auth: 'facebook',
             handler: loginController
         }
     });
