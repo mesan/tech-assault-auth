@@ -5,6 +5,11 @@ import loginFacebookController from './controllers/loginFacebookController';
 import logoutController from './controllers/logoutController';
 import getSessionController from './controllers/getSessionController';
 
+let {
+    TECH_AUTH_FACEBOOK_CLIENT_ID,
+    TECH_AUTH_FACEBOOK_CLIENT_SECRET
+} = process.env;
+
 let server = new Hapi.Server();
 
 let tls = (typeof process.env.MODE === 'undefined' || process.env.MODE === 'dev') ? {
@@ -25,18 +30,10 @@ server.register([Bell], (err) => {
     server.auth.strategy('facebook', 'bell', {
         provider: 'facebook',
         password: 'cookie_encryption_password',
-        clientId: process.env.FACEBOOK_CLIENT_ID,
-        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
+        clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
         isSecure: false
     });
-
-    /*server.auth.strategy('session', 'cookie', {
-        password: 'cookie',
-        cookie: 'sid',
-        redirectTo: '/login',
-        redirectOnTry: false,
-        isSecure: true
-    });*/
 
     server.route({
         method: ['GET', 'POST'],

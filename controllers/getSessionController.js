@@ -2,39 +2,29 @@ import database from '../util/database';
 import moment from 'moment';
 import Q from 'q';
 
+let {
+    TECH_AUTH_TOKEN_TTL
+} = process.env;
+
 export default function getSessionController(request, reply) {
-    database('profileCollection')
+    database('profiles')
         .then((collection) => {
-            
-            let oneMonthAgo = moment()
-                .subtract(process.env.TECH_AUTH_TOKEN_TTL, 'seconds')
+            let timeToLive = moment()
+                .subtract(TECH_AUTH_TOKEN_TTL, 'seconds')
                 .toDate();
 
-            collection.remove({ createdAt: { $lte: oneMonthAgo }}, (err, docs) => {
-                if (err) {
-                    console.log(err);
-                    return reply(err).code(500);
-                }
-
-                collection.find(
+            collection.remove({ createdAt: { $lte: timeToLive }});
+            
+            let profileCursor = collection.find(
                     { token: request.params.token },
-                    { name: 1, fullName: 1, createdAt: 1 })
-                .toArray((err, docs) => {
-                    if (err) {
-                        console.log(err);
-                        return reply(err).code(500);
-                    }
+                    { name: 1, fullName: 1, createdAt: 1 });
 
-                    if (!docs.length) {
-                        return reply().code(404);
-                    }
-
-                    reply(docs[0]);
-                });
+            profileCursor.toArray((err, docs) => {
+                return docs.length ? reply(docs[0]) : reply().code(404);
             });
         })
         .fail((err) => {
             console.log(err);
-            reply().code(204);
+            reply().code(500);
         });
 }

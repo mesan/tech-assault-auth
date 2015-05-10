@@ -1,33 +1,34 @@
 import database from '../util/database';
 
-export default function loginFacebookController(request, reply) {
-    console.log(request.auth.error);
+let {
+    TECH_AUTH_FACEBOOK_LOGIN_TOKEN_PREFIX,
+    TECH_AUTH_LOGIN_REDIRECT_URL
+} = process.env;
 
+export default function loginFacebookController(request, reply) {
     var cred = request.auth.credentials;
 
     var profile = {
-        token: process.env.FACEBOOK_LOGIN_TOKEN_PREFIX + cred.token,
+        token: TECH_AUTH_FACEBOOK_LOGIN_TOKEN_PREFIX + cred.token,
         secret: cred.secret,
         id: cred.profile.id,
         name: cred.profile.name,
         fullName: cred.profile.displayName,
-        createdAt: new Date()
+        createdAt: new Date(),
+        authProvider: 'facebook'
     };
 
-    database('profileCollection')
+    database('profiles')
         .then((collection) => {
             collection.insert(profile);
         })
         .fail((err) => {
-            console.log(err);
+            console.log('failed', err);
         });
 
-    /*request.auth.session.clear();
-    request.auth.session.set(profile);*/
-
-    if (!process.env.LOGIN_REDIRECT_URL) {
+    if (!TECH_AUTH_LOGIN_REDIRECT_URL) {
         return reply.redirect('/');
     }
 
-    return reply.redirect(process.env.LOGIN_REDIRECT_URL + '?token=' + profile.token);
+    return reply.redirect(TECH_AUTH_LOGIN_REDIRECT_URL + '?token=' + profile.token);
 }
