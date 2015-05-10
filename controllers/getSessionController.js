@@ -17,10 +17,16 @@ export default function getSessionController(request, reply) {
             
             let profileCursor = collection.find(
                     { token: request.params.token },
-                    { name: 1, fullName: 1, createdAt: 1 });
+                    { name: 1, fullName: 1, createdAt: 1, avatar: 1 });
 
             profileCursor.toArray((err, docs) => {
-                return docs.length ? reply(docs[0]) : reply().code(404);
+                if (docs.length === 0) {
+                    return reply().code(404);
+                }
+
+                let profile = docs[0];
+
+                return docs.length ? reply(profile) : reply().code(404);
             });
         })
         .fail((err) => {

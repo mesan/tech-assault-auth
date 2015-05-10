@@ -6,16 +6,21 @@ let {
 } = process.env;
 
 export default function loginFacebookController(request, reply) {
-    var cred = request.auth.credentials;
+    let cred = request.auth.credentials;
 
-    var profile = {
+    let avatar = `http://graph.facebook.com/${cred.profile.id}/picture`;
+
+    let profile = {
         token: TECH_AUTH_FACEBOOK_LOGIN_TOKEN_PREFIX + cred.token,
         secret: cred.secret,
         id: cred.profile.id,
         name: cred.profile.name,
         fullName: cred.profile.displayName,
         createdAt: new Date(),
-        authProvider: 'facebook'
+        authProvider: 'facebook',
+        avatar: {
+            large: `${avatar}?type=large`
+        }
     };
 
     database('profiles')
