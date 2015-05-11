@@ -37,7 +37,7 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET', 'POST'],
-        path: '/login',
+        path: '/login/facebook',
         config: {
             auth: 'facebook',
             handler: loginFacebookController
