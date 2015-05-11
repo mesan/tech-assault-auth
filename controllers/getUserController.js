@@ -6,7 +6,11 @@ let {
     TECH_AUTH_TOKEN_TTL
 } = process.env;
 
-export default function getSessionController(request, reply) {
+export default function getUserController(request, reply) {
+    if (!request.query.token) {
+        return reply({ error: 'Please provide a session token as query parameter.' }).code(400);
+    }
+
     database('profiles')
         .then((collection) => {
             let timeToLive = moment()
@@ -16,8 +20,8 @@ export default function getSessionController(request, reply) {
             collection.remove({ createdAt: { $lte: timeToLive }});
             
             let profileCursor = collection.find(
-                    { token: request.params.token },
-                    { name: 1, fullName: 1, createdAt: 1, avatar: 1 });
+                    { token: request.query.token },
+                    { _id: 0, id: 1, name: 1, fullName: 1, avatar: 1 });
 
             profileCursor.toArray((err, docs) => {
                 if (docs.length === 0) {
@@ -26,7 +30,7 @@ export default function getSessionController(request, reply) {
 
                 let profile = docs[0];
 
-                return docs.length ? reply(profile) : reply().code(404);
+                return reply(profile);
             });
         })
         .fail((err) => {

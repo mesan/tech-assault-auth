@@ -3,7 +3,7 @@ import fs from 'fs';
 import Bell from 'bell';
 import loginFacebookController from './controllers/loginFacebookController';
 import logoutController from './controllers/logoutController';
-import getSessionController from './controllers/getSessionController';
+import getUserController from './controllers/getUserController';
 
 let {
     TECH_AUTH_FACEBOOK_CLIENT_ID,
@@ -55,10 +55,10 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET'],
-        path: '/sessions/{token}',
+        path: '/users',
         config: {
             auth: false,
-            handler: getSessionController
+            handler: getUserController
         }
     });
 
