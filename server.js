@@ -2,36 +2,38 @@ import Hapi from 'hapi';
 import fs from 'fs';
 import Bell from 'bell';
 import loginFacebookController from './controllers/loginFacebookController';
+import loginTwitterController from './controllers/loginTwitterController';
 import logoutController from './controllers/logoutController';
 import getUserController from './controllers/getUserController';
 
 let {
     TECH_AUTH_FACEBOOK_CLIENT_ID,
-    TECH_AUTH_FACEBOOK_CLIENT_SECRET
+    TECH_AUTH_FACEBOOK_CLIENT_SECRET,
+    TECH_AUTH_TWITTER_CLIENT_ID,
+    TECH_AUTH_TWITTER_CLIENT_SECRET
 } = process.env;
 
 let server = new Hapi.Server();
 
-let tls = (typeof process.env.MODE === 'undefined' || process.env.MODE === 'dev') ? {
-    key: fs.readFileSync('./ssl/server.key'),
-    cert: fs.readFileSync('./ssl/server.crt'),
-    ca: fs.readFileSync('./ssl/ca.crt'),
-    requestCert: true,
-    rejectUnauthorized: false
-} : undefined;
-
 server.connection({
-    port: process.env.PORT || 3002,
-    tls: tls
+    port: process.env.PORT || 3002
 });
 
 server.register([Bell], (err) => {
 
     server.auth.strategy('facebook', 'bell', {
         provider: 'facebook',
-        password: 'cookie_encryption_password',
+        password: 'MUST_BE_CHANGED',
         clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
         clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
+        isSecure: false
+    });
+
+    server.auth.strategy('twitter', 'bell', {
+        provider: 'twitter',
+        password: 'MUST_BE_CHANGED2',
+        clientId: TECH_AUTH_TWITTER_CLIENT_ID,
+        clientSecret: TECH_AUTH_TWITTER_CLIENT_SECRET,
         isSecure: false
     });
 
@@ -41,6 +43,15 @@ server.register([Bell], (err) => {
         config: {
             auth: 'facebook',
             handler: loginFacebookController
+        }
+    });
+
+    server.route({
+        method: ['GET', 'POST'],
+        path: '/login/twitter',
+        config: {
+            auth: 'twitter',
+            handler: loginTwitterController
         }
     });
 
