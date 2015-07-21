@@ -35,5 +35,5 @@ export default function loginFacebookController(request, reply) {
         return reply.redirect('/');
     }
 
-    return reply.redirect(TECH_AUTH_LOGIN_REDIRECT_URL + '?token=' + profile.token);
+    return reply.redirect(`${TECH_AUTH_LOGIN_REDIRECT_URL}?token=${profile.token}`);
 }
