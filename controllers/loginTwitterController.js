@@ -5,7 +5,7 @@ let {
     TECH_AUTH_LOGIN_REDIRECT_URL
 } = process.env;
 
-export default function loginFacebookController(request, reply) {
+export default function loginTwitterController(request, reply) {
     let cred = request.auth.credentials;
 
     let avatar = `https://twitter.com/${cred.profile.username}/profile_image?size=original`;
@@ -25,7 +25,7 @@ export default function loginFacebookController(request, reply) {
 
     database('profiles')
         .then((collection) => {
-            collection.insert(profile);
+            collection.update({ token: cred.token }, profile, { upsert: true });
         })
         .fail((err) => {
             console.log('failed', err);
