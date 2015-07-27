@@ -30,8 +30,6 @@ server.register([Bell], (err) => {
         isSecure: false
     });
 
-
-
     server.route({
         method: ['GET', 'POST'],
         path: '/login/twitter',

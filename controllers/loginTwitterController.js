@@ -1,16 +1,17 @@
-import database from '../util/database';
+import pdb from '../util/pdb';
 
-let {
+const {
     TECH_AUTH_ID_PREFIX_TWITTER,
-    TECH_AUTH_LOGIN_REDIRECT_URL
+    TECH_AUTH_LOGIN_REDIRECT_URL,
+    TECH_AUTH_MONGOLAB_URI
 } = process.env;
 
 export default function loginTwitterController(request, reply) {
-    let cred = request.auth.credentials;
+    const cred = request.auth.credentials;
 
-    let avatar = `https://twitter.com/${cred.profile.username}/profile_image?size=original`;
+    const avatar = `https://twitter.com/${cred.profile.username}/profile_image?size=original`;
 
-    let profile = {
+    const profile = {
         token: cred.token,
         secret: cred.secret,
         id: TECH_AUTH_ID_PREFIX_TWITTER + cred.profile.id,
@@ -23,17 +24,19 @@ export default function loginTwitterController(request, reply) {
         }
     };
 
-    database('profiles')
-        .then((collection) => {
-            collection.update({ token: cred.token }, profile, { upsert: true });
+    pdb.connect(TECH_AUTH_MONGOLAB_URI, 'profiles')
+        .then(([db, collection]) => {
+            return collection.update({ token: cred.token }, profile, { upsert: true });
         })
-        .fail((err) => {
-            console.log('failed', err);
+        .then(() => {
+            if (!TECH_AUTH_LOGIN_REDIRECT_URL) {
+                return reply.redirect('/');
+            }
+
+            return reply.redirect(`${TECH_AUTH_LOGIN_REDIRECT_URL}?token=${profile.token}`);
+        })
+        .catch((err) => {
+            console.log(err.stack);
+            reply(err);
         });
-
-    if (!TECH_AUTH_LOGIN_REDIRECT_URL) {
-        return reply.redirect('/');
-    }
-
-    return reply.redirect(`${TECH_AUTH_LOGIN_REDIRECT_URL}?token=${profile.token}`);
 }
