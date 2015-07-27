@@ -1,10 +1,11 @@
 import Hapi from 'hapi';
 import fs from 'fs';
 import Bell from 'bell';
-import loginFacebookController from './controllers/loginFacebookController';
 import loginTwitterController from './controllers/loginTwitterController';
 import logoutController from './controllers/logoutController';
 import getUserController from './controllers/getUserController';
+
+//import loginFacebookController from './controllers/loginFacebookController';
 
 let {
     TECH_AUTH_FACEBOOK_CLIENT_ID,
@@ -21,14 +22,6 @@ server.connection({
 
 server.register([Bell], (err) => {
 
-    server.auth.strategy('facebook', 'bell', {
-        provider: 'facebook',
-        password: 'MUST_BE_CHANGED',
-        clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
-        clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
-        isSecure: false
-    });
-
     server.auth.strategy('twitter', 'bell', {
         provider: 'twitter',
         password: 'MUST_BE_CHANGED2',
@@ -37,14 +30,7 @@ server.register([Bell], (err) => {
         isSecure: false
     });
 
-    server.route({
-        method: ['GET', 'POST'],
-        path: '/login/facebook',
-        config: {
-            auth: 'facebook',
-            handler: loginFacebookController
-        }
-    });
+
 
     server.route({
         method: ['GET', 'POST'],
@@ -72,6 +58,23 @@ server.register([Bell], (err) => {
             handler: getUserController
         }
     });
+
+    /*server.auth.strategy('facebook', 'bell', {
+        provider: 'facebook',
+        password: 'MUST_BE_CHANGED',
+        clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
+        clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
+        isSecure: false
+    });*/
+
+    /*server.route({
+        method: ['GET', 'POST'],
+        path: '/login/facebook',
+        config: {
+            auth: 'facebook',
+            handler: loginFacebookController
+        }
+    });*/
 
     server.start(() => {
         console.log('Server running at:', server.info.uri);
