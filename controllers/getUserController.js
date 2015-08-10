@@ -7,7 +7,9 @@ const {
 } = process.env;
 
 export default function getUserController(request, reply) {
-    if (!request.query.token) {
+    const { token } = request.params;
+
+    if (!token) {
         return reply({ error: 'Please provide a session token as query parameter.' }).code(400);
     }
 
@@ -25,7 +27,7 @@ export default function getUserController(request, reply) {
         })
         .then(() => {
             return col.pfind(
-                {token: request.query.token},
+                { token },
                 {_id: 0, id: 1, name: 1, fullName: 1, avatar: 1}
             ).toArray();
         })
@@ -34,9 +36,8 @@ export default function getUserController(request, reply) {
                 return reply().code(404);
             }
 
-            return docs[0];
+            return reply(docs[0]);
         })
-        .then(reply)
         .catch((err) => {
             console.log(err.stack);
             reply(err);

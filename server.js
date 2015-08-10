@@ -50,7 +50,7 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET'],
-        path: '/users',
+        path: '/users/{token}',
         config: {
             auth: false,
             handler: getUserController
