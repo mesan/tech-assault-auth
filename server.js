@@ -5,13 +5,34 @@ import loginTwitterController from './controllers/loginTwitterController';
 import logoutController from './controllers/logoutController';
 import getUserController from './controllers/getUserController';
 
-//import loginFacebookController from './controllers/loginFacebookController';
+const envVars = [
+    'TECH_AUTH_MONGOLAB_URI',
+    'TECH_AUTH_TWITTER_CLIENT_SECRET',
+    'TECH_AUTH_TWITTER_CLIENT_ID',
+    'TECH_AUTH_TWITTER_PASSWORD',
+    'TECH_AUTH_TOKEN_TTL',
+    'TECH_AUTH_ID_PREFIX_TWITTER',
+    'TECH_AUTH_LOGIN_REDIRECT_URL',
+    'TECH_AUTH_LOGOUT_REDIRECT_URL'
+];
+
+let undefinedEnvVars = [];
+
+for (let envVar of envVars) {
+    if (typeof process.env[envVar] === 'undefined') {
+        undefinedEnvVars.push(envVar);
+    }
+}
+
+if (undefinedEnvVars.length > 0) {
+    console.error(`You need to define the following environment variable(s): ${undefinedEnvVars.join(', ')}`);
+    process.exit(1);
+}
 
 let {
-    TECH_AUTH_FACEBOOK_CLIENT_ID,
-    TECH_AUTH_FACEBOOK_CLIENT_SECRET,
+    TECH_AUTH_TWITTER_CLIENT_SECRET,
     TECH_AUTH_TWITTER_CLIENT_ID,
-    TECH_AUTH_TWITTER_CLIENT_SECRET
+    TECH_AUTH_TWITTER_PASSWORD
 } = process.env;
 
 let server = new Hapi.Server();
@@ -24,7 +45,7 @@ server.register([Bell], (err) => {
 
     server.auth.strategy('twitter', 'bell', {
         provider: 'twitter',
-        password: 'MUST_BE_CHANGED2',
+        password: TECH_AUTH_TWITTER_PASSWORD,
         clientId: TECH_AUTH_TWITTER_CLIENT_ID,
         clientSecret: TECH_AUTH_TWITTER_CLIENT_SECRET,
         isSecure: false
