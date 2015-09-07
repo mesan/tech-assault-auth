@@ -4,7 +4,7 @@
   "description": "Service performing authentication in Tech Assault.",
   "scripts": {
     "test": "mocha",
-    "start": "babel-node server"
+    "start": "babel-node src/server"
   },
   "author": "Arild Wanvik Tvergrov <arild.wanvik@gmail.com>",
   "license": "BSD-2-Clause",
