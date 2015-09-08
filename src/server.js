@@ -30,6 +30,8 @@ if (undefinedEnvVars.length > 0) {
     process.exit(1);
 }
 
+require("console-stamp")(console, { pattern: 'yymmdd/HHMMss.L'});
+
 var options = {
     opsInterval: 1000,
     reporters: [{
