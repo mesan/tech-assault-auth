@@ -30,6 +30,14 @@ if (undefinedEnvVars.length > 0) {
     process.exit(1);
 }
 
+var options = {
+    opsInterval: 1000,
+    reporters: [{
+        reporter: require('good-console'),
+        events: { log: '*', request: '*', response: '*' }
+    }]
+};
+
 let {
     TECH_AUTH_TWITTER_CLIENT_SECRET,
     TECH_AUTH_TWITTER_CLIENT_ID,
@@ -44,61 +52,55 @@ server.connection({
     host: process.env.HOST || 'localhost'
 });
 
-server.register([Bell], (err) => {
+server.register({
+    register: require('good'),
+    options: options
+}, function (err) {
 
-    server.auth.strategy('twitter', 'bell', {
-        provider: 'twitter',
-        password: TECH_AUTH_TWITTER_PASSWORD,
-        clientId: TECH_AUTH_TWITTER_CLIENT_ID,
-        clientSecret: TECH_AUTH_TWITTER_CLIENT_SECRET,
-        isSecure: false
-    });
+    if (err) {
+        console.error(err);
+    }
+    else {
+        server.register([Bell], (err) => {
 
-    server.route({
-        method: ['GET', 'POST'],
-        path: `${TECH_AUTH_PATH_PREFIX}/login/twitter`,
-        config: {
-            auth: 'twitter',
-            handler: loginTwitterController
-        }
-    });
+            server.auth.strategy('twitter', 'bell', {
+                provider: 'twitter',
+                password: TECH_AUTH_TWITTER_PASSWORD,
+                clientId: TECH_AUTH_TWITTER_CLIENT_ID,
+                clientSecret: TECH_AUTH_TWITTER_CLIENT_SECRET,
+                isSecure: false
+            });
 
-    server.route({
-        method: ['GET'],
-        path: `${TECH_AUTH_PATH_PREFIX}/logout/{token}`,
-        config: {
-            auth: false,
-            handler: logoutController
-        }
-    });
+            server.route({
+                method: ['GET', 'POST'],
+                path: `${TECH_AUTH_PATH_PREFIX}/login/twitter`,
+                config: {
+                    auth: 'twitter',
+                    handler: loginTwitterController
+                }
+            });
 
-    server.route({
-        method: ['GET'],
-        path: `${TECH_AUTH_PATH_PREFIX}/users/{token}`,
-        config: {
-            auth: false,
-            handler: getUserController
-        }
-    });
+            server.route({
+                method: ['GET'],
+                path: `${TECH_AUTH_PATH_PREFIX}/logout/{token}`,
+                config: {
+                    auth: false,
+                    handler: logoutController
+                }
+            });
 
-    /*server.auth.strategy('facebook', 'bell', {
-        provider: 'facebook',
-        password: 'MUST_BE_CHANGED',
-        clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
-        clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
-        isSecure: false
-    });*/
+            server.route({
+                method: ['GET'],
+                path: `${TECH_AUTH_PATH_PREFIX}/users/{token}`,
+                config: {
+                    auth: false,
+                    handler: getUserController
+                }
+            });
 
-    /*server.route({
-        method: ['GET', 'POST'],
-        path: '/login/facebook',
-        config: {
-            auth: 'facebook',
-            handler: loginFacebookController
-        }
-    });*/
-
-    server.start(() => {
-        console.log('Server running at:', server.info.uri);
-    });
+            server.start(() => {
+                console.log('Server running at:', server.info.uri);
+            });
+        });
+    }
 });
