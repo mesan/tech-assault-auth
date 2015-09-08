@@ -40,7 +40,8 @@ let {
 let server = new Hapi.Server();
 
 server.connection({
-    port: process.env.PORT || 3002
+    port: process.env.PORT || 3002,
+    host: process.env.HOST || 'localhost'
 });
 
 server.register([Bell], (err) => {
