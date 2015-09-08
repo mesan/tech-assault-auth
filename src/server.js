@@ -13,7 +13,8 @@ const envVars = [
     'TECH_AUTH_TOKEN_TTL',
     'TECH_AUTH_ID_PREFIX_TWITTER',
     'TECH_AUTH_LOGIN_REDIRECT_URL',
-    'TECH_AUTH_LOGOUT_REDIRECT_URL'
+    'TECH_AUTH_LOGOUT_REDIRECT_URL',
+    'TECH_AUTH_PATH_PREFIX'
 ];
 
 let undefinedEnvVars = [];
@@ -32,7 +33,8 @@ if (undefinedEnvVars.length > 0) {
 let {
     TECH_AUTH_TWITTER_CLIENT_SECRET,
     TECH_AUTH_TWITTER_CLIENT_ID,
-    TECH_AUTH_TWITTER_PASSWORD
+    TECH_AUTH_TWITTER_PASSWORD,
+    TECH_AUTH_PATH_PREFIX
 } = process.env;
 
 let server = new Hapi.Server();
@@ -53,7 +55,7 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET', 'POST'],
-        path: '/login/twitter',
+        path: `${TECH_AUTH_PATH_PREFIX}/login/twitter`,
         config: {
             auth: 'twitter',
             handler: loginTwitterController
@@ -62,7 +64,7 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET'],
-        path: '/logout/{token}',
+        path: `${TECH_AUTH_PATH_PREFIX}/logout/{token}`,
         config: {
             auth: false,
             handler: logoutController
@@ -71,7 +73,7 @@ server.register([Bell], (err) => {
 
     server.route({
         method: ['GET'],
-        path: '/users/{token}',
+        path: `${TECH_AUTH_PATH_PREFIX}/users/{token}`,
         config: {
             auth: false,
             handler: getUserController
