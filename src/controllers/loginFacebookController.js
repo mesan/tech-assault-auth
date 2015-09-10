@@ -1,39 +1,42 @@
-import database from '../util/database';
+import pdb from '../util/pdb';
 
 let {
     TECH_AUTH_ID_PREFIX_FACEBOOK,
-    TECH_AUTH_LOGIN_REDIRECT_URL
+    TECH_AUTH_LOGIN_REDIRECT_URL,
+    TECH_AUTH_MONGOLAB_URI
 } = process.env;
 
 export default function loginFacebookController(request, reply) {
-    let cred = request.auth.credentials;
+    const cred = request.auth.credentials;
 
-    let avatar = `http://graph.facebook.com/${cred.profile.id}/picture`;
+    let avatar = `http://graph.facebook.com/${cred.profile.id}/picture?type=large`;
 
-    let profile = {
+    const profile = {
         token: cred.token,
         secret: cred.secret,
         id: TECH_AUTH_ID_PREFIX_FACEBOOK + cred.profile.id,
-        name: cred.profile.name,
+        name: cred.profile.displayName,
         fullName: cred.profile.displayName,
         createdAt: new Date(),
         authProvider: 'facebook',
         avatar: {
-            large: `${avatar}?type=large`
+            large: avatar
         }
     };
 
-    database('profiles')
-        .then((collection) => {
-            collection.insert(profile);
+    pdb.connect(TECH_AUTH_MONGOLAB_URI, 'profiles')
+        .then(([db, collection]) => {
+            return collection.update({ token: cred.token }, profile, { upsert: true });
         })
-        .fail((err) => {
-            console.log('failed', err);
+        .then(() => {
+            if (!TECH_AUTH_LOGIN_REDIRECT_URL) {
+                return reply.redirect('/');
+            }
+
+            return reply.redirect(`${TECH_AUTH_LOGIN_REDIRECT_URL}?token=${profile.token}`);
+        })
+        .catch((err) => {
+            console.log(err.stack);
+            reply(err);
         });
-
-    if (!TECH_AUTH_LOGIN_REDIRECT_URL) {
-        return reply.redirect('/');
-    }
-
-    return reply.redirect(TECH_AUTH_LOGIN_REDIRECT_URL + '?token=' + profile.token);
 }

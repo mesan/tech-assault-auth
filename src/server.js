@@ -2,6 +2,7 @@ import Hapi from 'hapi';
 import fs from 'fs';
 import Bell from 'bell';
 import loginTwitterController from './controllers/loginTwitterController';
+import loginFacebookController from './controllers/loginFacebookController';
 import logoutController from './controllers/logoutController';
 import getUserController from './controllers/getUserController';
 
@@ -14,7 +15,10 @@ const envVars = [
     'TECH_AUTH_ID_PREFIX_TWITTER',
     'TECH_AUTH_LOGIN_REDIRECT_URL',
     'TECH_AUTH_LOGOUT_REDIRECT_URL',
-    'TECH_AUTH_PATH_PREFIX'
+    'TECH_AUTH_PATH_PREFIX',
+    'TECH_AUTH_FACEBOOK_PASSWORD',
+    'TECH_AUTH_FACEBOOK_CLIENT_ID',
+    'TECH_AUTH_FACEBOOK_CLIENT_SECRET'
 ];
 
 let undefinedEnvVars = [];
@@ -44,7 +48,10 @@ let {
     TECH_AUTH_TWITTER_CLIENT_SECRET,
     TECH_AUTH_TWITTER_CLIENT_ID,
     TECH_AUTH_TWITTER_PASSWORD,
-    TECH_AUTH_PATH_PREFIX
+    TECH_AUTH_PATH_PREFIX,
+    TECH_AUTH_FACEBOOK_PASSWORD,
+    TECH_AUTH_FACEBOOK_CLIENT_ID,
+    TECH_AUTH_FACEBOOK_CLIENT_SECRET
 } = process.env;
 
 let server = new Hapi.Server();
@@ -65,6 +72,14 @@ server.register({
     else {
         server.register([Bell], (err) => {
 
+            server.auth.strategy('facebook', 'bell', {
+                provider: 'facebook',
+                password: TECH_AUTH_FACEBOOK_PASSWORD,
+                clientId: TECH_AUTH_FACEBOOK_CLIENT_ID,
+                clientSecret: TECH_AUTH_FACEBOOK_CLIENT_SECRET,
+                isSecure: false
+            });
+
             server.auth.strategy('twitter', 'bell', {
                 provider: 'twitter',
                 password: TECH_AUTH_TWITTER_PASSWORD,
@@ -79,6 +94,16 @@ server.register({
                 config: {
                     auth: 'twitter',
                     handler: loginTwitterController
+                }
+            });
+
+            console.log(`${TECH_AUTH_PATH_PREFIX}/login/facebook`);
+            server.route({
+                method: ['GET', 'POST'],
+                path: `${TECH_AUTH_PATH_PREFIX}/login/facebook`,
+                config: {
+                    auth: 'facebook',
+                    handler: loginFacebookController
                 }
             });
 
