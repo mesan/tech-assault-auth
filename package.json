@@ -11,6 +11,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "babel": "~5.2.15",
+    "babel-core": "~5.2.17",
     "bell": "~2.7.0",
     "console-stamp": "^0.2.0",
     "good": "^6.3.0",
