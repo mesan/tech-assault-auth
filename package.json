@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Service performing authentication in Tech Assault.",
   "scripts": {
+    "postinstall": "./node_modules/.bin/babel src -d dist",
     "test": "mocha",
     "start": "babel-node src/server"
   },
